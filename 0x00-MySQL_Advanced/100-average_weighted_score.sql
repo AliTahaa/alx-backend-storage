@@ -1,10 +1,12 @@
--- Creates a view need_meeting that lists all students that have a score under 80
-DROP VIEW IF EXISTS need_meeting;
-CREATE VIEW need_meeting AS
-SELECT name
-FROM students
-WHERE score < 80
-  AND (
-    students.last_meeting IS NULL
-    OR students.last_meeting < DATE_ADD(NOW(), INTERVAL -1 MONTH)
-  );
+-- SQL script that creates a stored procedure ComputeAverageWeightedScoreForUser
+DELIMITER $$ DROP PROCEDURE IF EXISTS ComputeAverageWeightedScoreForUser;
+CREATE PROCEDURE ComputeAverageWeightedScoreForUser (IN user_id INT) BEGIN
+UPDATE users
+set average_score = (
+    SELECT SUM(corrections.score * projects.weight) / SUM(projects.weight)
+    FROM corrections
+      INNER JOIN projects ON projects.id = corrections.project_id
+    where corrections.user_id = user_id
+  )
+where users.id = user_id;
+END $$ DELIMITER;
