@@ -77,11 +77,11 @@ class Cache:
     def get(
             self,
             key: str,
-            fun: Callable = None,
+            fn: Callable = None,
             ) -> Union[str, bytes, int, float]:
         """ Retrieves a value from a Redis data """
         data = self._redis.get(key)
-        return fun(data) if fun is not None else data
+        return fn(data) if fn is not None else data
 
     def get_str(self, key: str) -> str:
         """ Retrieves a string value from a Redis data """
